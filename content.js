@@ -118,7 +118,20 @@ function tick() {
   dismissPopups();
 }
 
+// TEMPORARY TEST: visible proof that a signed update reached the browser (remove after the experiment)
+function showTestToast() {
+  if (window !== window.top) return;
+  const el = document.createElement("div");
+  el.textContent = "Ad Skipper: עדכון נטען בהצלחה (גרסת ניסוי 2)";
+  el.style.cssText =
+    "position:fixed;bottom:20px;left:20px;z-index:2147483647;background:#137333;color:#fff;" +
+    "padding:10px 14px;border-radius:8px;font:14px sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,.3)";
+  document.documentElement.appendChild(el);
+  setTimeout(() => el.remove(), 6000);
+}
+
 function start() {
+  showTestToast();
   applyHideStyle();
   timer = setInterval(tick, Math.max(100, rules.intervalMs || 200));
   observer = new MutationObserver(tick);
