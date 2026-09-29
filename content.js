@@ -11,7 +11,7 @@ const rules = __RULES__;
 let timer = null;
 let observer = null;
 let styleEl = null;
-let saved = null; // player state before an ad
+let saved = null; // player state before an ad (only the mute state; we no longer touch playbackRate)
 
 // ---------- helpers ----------
 const norm = (s) => (s || "").toLowerCase().replace(/[\s,.!?"'׳״־\-]/g, "");
@@ -56,14 +56,14 @@ function handleAd(player) {
   const video = getVideo(player);
   if (!video) return;
 
-  if (!saved) saved = { muted: video.muted, rate: video.playbackRate };
+  if (!saved) saved = { muted: video.muted };
 
   // 1. skip button
   if (clickIfExists(sel(rules.skipButtons))) return;
 
-  // 2. unskippable: mute, speed up, jump to the end
+  // 2. unskippable: mute and jump to the end (playbackRate is deliberately left alone:
+  //    changing it made regular videos play fast afterwards)
   video.muted = true;
-  try { video.playbackRate = 16; } catch (_) {}
   if (isFinite(video.duration) && video.duration > 0) {
     try { video.currentTime = video.duration; } catch (_) {}
   }
@@ -73,11 +73,17 @@ function handleAd(player) {
 function restoreAfterAd(player) {
   if (!saved) return;
   const video = player && getVideo(player);
-  if (video) {
-    video.muted = saved.muted;
-    try { video.playbackRate = saved.rate || 1; } catch (_) {}
-  }
+  if (video) video.muted = saved.muted;
   saved = null;
+}
+
+// Repair for the earlier bug: older versions set playbackRate = 16 during ads and it could stick.
+// 16 is far above anything a person would choose, so outside of ads it is safe to reset it.
+function repairStuckSpeed(player) {
+  const video = player && getVideo(player);
+  if (video && video.playbackRate >= 16) {
+    try { video.playbackRate = 1; } catch (_) {}
+  }
 }
 
 // ---------- popups (Premium etc.) ----------
@@ -113,6 +119,7 @@ function tick() {
     handleAd(player);
   } else {
     restoreAfterAd(player);
+    repairStuckSpeed(player);
   }
   clickIfExists(sel(rules.overlayClose));
   dismissPopups();
@@ -122,7 +129,7 @@ function tick() {
 function showTestToast() {
   if (window !== window.top) return;
   const el = document.createElement("div");
-  el.textContent = "Ad Skipper: עדכון נטען בהצלחה (גרסת ניסוי 2)";
+  el.textContent = "Ad Skipper: עדכון נטען בהצלחה (גרסת ניסוי 3 - תיקון מהירות)";
   el.style.cssText =
     "position:fixed;bottom:20px;left:20px;z-index:2147483647;background:#137333;color:#fff;" +
     "padding:10px 14px;border-radius:8px;font:14px sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,.3)";
