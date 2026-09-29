@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "intervalMs": 200,
+  "skipButtons": [
+    ".ytp-skip-ad-button",
+    ".ytp-ad-skip-button",
+    ".ytp-ad-skip-button-modern",
+    ".ytp-ad-skip-button-container button"
+  ],
+  "overlayClose": [
+    ".ytp-ad-overlay-close-button",
+    ".ytp-ad-overlay-close-container"
+  ],
+  "hide": [
+    "#masthead-ad",
+    "#player-ads",
+    "ytd-ad-slot-renderer",
+    "ytd-in-feed-ad-layout-renderer",
+    "ytd-banner-promo-renderer",
+    "ytd-display-ad-renderer",
+    "ytd-promoted-sparkles-web-renderer",
+    "ytd-promoted-video-renderer",
+    "ytd-companion-slot-renderer",
+    "ytd-action-companion-ad-renderer",
+    ".ytp-ad-overlay-container",
+    ".ytp-ad-overlay-slot"
+  ],
+  "popupContainers": [
+    "ytd-popup-container",
+    "tp-yt-paper-dialog",
+    "yt-dialog",
+    "yt-upsell-dialog-renderer",
+    "ytd-mealbar-promo-renderer",
+    "yt-mealbar-promo-renderer",
+    "ytd-enforcement-message-view-model",
+    "[role='dialog']"
+  ],
+  "popupTriggerText": [
+    "YouTube Premium",
+    "YouTube Music Premium",
+    "Premium",
+    "פרימיום",
+    "תקופת ניסיון",
+    "חודש ניסיון",
+    "free trial",
+    "Try it free"
+  ],
+  "dismissButtonText": [
+    "לא, תודה",
+    "לא תודה",
+    "לא עכשיו",
+    "אולי בפעם אחרת",
+    "סגור",
+    "No thanks",
+    "No, thanks",
+    "Not now",
+    "Maybe later",
+    "Dismiss",
+    "Close"
+  ]
+}
