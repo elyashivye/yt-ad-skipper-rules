@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "intervalMs": 200,
   "skipButtons": [
     ".ytp-skip-ad-button",
