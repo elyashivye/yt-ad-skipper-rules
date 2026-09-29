@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "intervalMs": 200,
   "skipButtons": [
     ".ytp-skip-ad-button",
@@ -23,7 +23,18 @@
     "ytd-companion-slot-renderer",
     "ytd-action-companion-ad-renderer",
     ".ytp-ad-overlay-container",
-    ".ytp-ad-overlay-slot"
+    ".ytp-ad-overlay-slot",
+    "ytd-engagement-panel-section-list-renderer[target-id='engagement-panel-ads']",
+    "ytd-engagement-panel-section-list-renderer[target-id*='ads']",
+    "ytd-ads-engagement-panel-content-renderer",
+    "ytd-carousel-ad-renderer",
+    "ytd-video-masthead-ad-v3-renderer",
+    "ytd-primetime-promo-renderer",
+    "ytd-statement-banner-renderer",
+    "ytd-brand-video-singleton-renderer",
+    "ytd-brand-video-shelf-renderer",
+    "ytd-search-pyv-renderer",
+    "ad-slot-renderer"
   ],
   "popupContainers": [
     "ytd-popup-container",
@@ -57,5 +68,30 @@
     "Maybe later",
     "Dismiss",
     "Close"
+  ],
+  "sponsoredBadgeText": [
+    "ממומן",
+    "מודעה",
+    "Sponsored",
+    "Ad",
+    "Advertisement"
+  ],
+  "sponsoredCeilings": [
+    "#secondary-inner",
+    "#secondary",
+    "#related",
+    "#below",
+    "#primary-inner",
+    "#items",
+    "#contents",
+    "#panels",
+    "ytd-watch-next-secondary-results-renderer",
+    "ytd-rich-grid-renderer",
+    "ytd-item-section-renderer",
+    "ytd-section-list-renderer",
+    "ytd-search",
+    "ytd-watch-flexy",
+    "ytd-browse",
+    "ytd-two-column-search-results-renderer"
   ]
 }
