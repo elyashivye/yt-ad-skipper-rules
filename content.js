@@ -86,6 +86,48 @@ function repairStuckSpeed(player) {
   }
 }
 
+// ---------- sponsored cards without a known selector ----------
+// Finds a small "Sponsored" badge (a text-only element whose whole text is e.g. "ממומן"), then hides the
+// whole ad card: the highest ancestor below a page-level container (rules.sponsoredCeilings).
+// Never hides anything that contains the video player, comments or the video's own info.
+const swept = new Set();
+let lastSweep = 0;
+const SAFE_GUARD = ".html5-video-player, #movie_player, ytd-comments, ytd-watch-metadata, ytd-masthead, #masthead-container";
+
+function sweepSponsored(force) {
+  const badges = new Set((rules.sponsoredBadgeText || []).map(norm));
+  const ceilingSel = sel(rules.sponsoredCeilings);
+  if (!badges.size || !ceilingSel) return;
+  const now = Date.now();
+  if (!force && now - lastSweep < 1000) return;
+  lastSweep = now;
+
+  const walker = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_ELEMENT);
+  const found = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (n.childElementCount !== 0) continue;
+    const t = n.textContent;
+    if (!t || t.length > 20) continue;
+    if (badges.has(norm(t))) found.push(n);
+  }
+
+  for (const leaf of found) {
+    if (leaf.closest(SAFE_GUARD) || leaf.closest("[data-yt-ad-skipper-hidden]")) continue;
+    let el = leaf;
+    let target = null;
+    for (let depth = 0; depth < 14 && el.parentElement; depth++) {
+      const parent = el.parentElement;
+      if (parent.matches(ceilingSel)) { target = el; break; }
+      el = parent;
+    }
+    if (!target || target === leaf) continue;
+    if (target.querySelector(SAFE_GUARD)) continue;
+    target.setAttribute("data-yt-ad-skipper-hidden", "1");
+    target.style.setProperty("display", "none", "important");
+    swept.add(target);
+  }
+}
+
 // ---------- popups (Premium etc.) ----------
 function dismissPopups() {
   const containerSel = sel(rules.popupContainers);
@@ -123,22 +165,10 @@ function tick() {
   }
   clickIfExists(sel(rules.overlayClose));
   dismissPopups();
-}
-
-// TEMPORARY TEST: visible proof that a signed update reached the browser (remove after the experiment)
-function showTestToast() {
-  if (window !== window.top) return;
-  const el = document.createElement("div");
-  el.textContent = "Ad Skipper: עדכון נטען בהצלחה (גרסת ניסוי 3 - תיקון מהירות)";
-  el.style.cssText =
-    "position:fixed;bottom:20px;left:20px;z-index:2147483647;background:#137333;color:#fff;" +
-    "padding:10px 14px;border-radius:8px;font:14px sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,.3)";
-  document.documentElement.appendChild(el);
-  setTimeout(() => el.remove(), 6000);
+  sweepSponsored(false);
 }
 
 function start() {
-  showTestToast();
   applyHideStyle();
   timer = setInterval(tick, Math.max(100, rules.intervalMs || 200));
   observer = new MutationObserver(tick);
@@ -155,6 +185,11 @@ globalThis.__ytAdSkipperStop = () => {
   clearInterval(timer);
   if (observer) observer.disconnect();
   if (styleEl) styleEl.remove();
+  for (const el of swept) {
+    el.removeAttribute("data-yt-ad-skipper-hidden");
+    el.style.removeProperty("display");
+  }
+  swept.clear();
   restoreAfterAd(getPlayer());
 };
 
